@@ -1,6 +1,6 @@
 # GAG - A Directed-Acyclic-Graph JIT in Go  
 
-GAG is a library I created while developing https://isobot.io to handle the core runtime necessary to execute blueprints.  
+GAG is a library I created while developing https://isobot.io to experiment with different ways of implementing the core runtime.  
 
 It intends to be a fast, highly parallel, DAG JIT, while still maintaining the balance between performance and usability.  
 
