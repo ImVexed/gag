@@ -183,11 +183,10 @@ func (g *Graph) buildNode(ctx *Context, nodeId int) (Runner, error) {
 
 		e, _ := g.findOutputEdge(nodeId, name)
 
-		field.Set(p.output.Get(v), &Execution{
-			edge:   e,
-			output: v,
-			g:      g,
-		})
+		exe := field.Get(p.output.Get(v)).(*Execution)
+		exe.edge = e
+		exe.g = g
+		exe.output = v
 	}
 
 	// Populate all of the inputs
