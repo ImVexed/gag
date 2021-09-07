@@ -29,19 +29,19 @@ A rather trival graph that simply adds 2 numbers together to compare the sum and
 
 ```go
 &Graph{
-		Nodes: []Node{
-			{Name: "Adder"},
-			{Name: "Comparer"},
-			{Name: "Panicer"},
-		},
-		Edges: []Edge{
-			{Output: Vertex{Raw: 1}, Input: Vertex{ID: 0, Field: "Number1"}},
-			{Output: Vertex{Raw: 2}, Input: Vertex{ID: 0, Field: "Number2"}},
-			{Output: Vertex{ID: 0, Field: "Sum"}, Input: Vertex{ID: 1, Field: "Number1"}},
-			{Output: Vertex{Raw: 4}, Input: Vertex{ID: 1, Field: "Number2"}},
-			{Output: Vertex{ID: 1, Field: "Greater"}, Input: Vertex{ID: 2}},
-		},
-	}
+	Nodes: []Node{
+		{Name: "Adder"},
+		{Name: "Comparer"},
+		{Name: "Panicer"},
+	},
+	Edges: []Edge{
+		{Output: Vertex{Raw: 1}, Input: Vertex{ID: 0, Field: "Number1"}},
+		{Output: Vertex{Raw: 2}, Input: Vertex{ID: 0, Field: "Number2"}},
+		{Output: Vertex{ID: 0, Field: "Sum"}, Input: Vertex{ID: 1, Field: "Number1"}},
+		{Output: Vertex{Raw: 4}, Input: Vertex{ID: 1, Field: "Number2"}},
+		{Output: Vertex{ID: 1, Field: "Greater"}, Input: Vertex{ID: 2}},
+	},
+}
 ```
 
 Where the implementation of the `Adder` and `Comparer` nodes look like:
