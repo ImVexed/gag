@@ -4,7 +4,6 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/goccy/go-reflect"
 	"github.com/modern-go/reflect2"
 )
 
@@ -12,7 +11,11 @@ type Runner interface {
 	Run(ctx *Context) error
 }
 
-type Execution func(ctx *Context) error
+type Execution struct {
+	output interface{}
+	edge   Edge
+	g      *Graph
+}
 
 var ErrGraphDone = errors.New("graph done")
 
@@ -58,6 +61,30 @@ func Register(nodes ...interface{}) {
 
 type Context struct {
 	state map[interface{}]interface{}
+}
+
+func (e Execution) Next(ctx *Context) error {
+	if e.edge.Input.Field == "" {
+		return ErrGraphDone
+	}
+
+	n := e.g.Nodes[e.edge.Output.ID]
+
+	p := nodeTypes[n.Name]
+
+	// Snapshot the output field of the node to cache before we head to the next node
+	if _, ok := ctx.state[outputContextKey(e.edge.Output.ID)]; !ok {
+		ctx.state[outputContextKey(e.edge.Output.ID)] = p.output.Get(e.output)
+	}
+
+	// JIT the next node to be ran
+	r, err := e.g.buildNode(ctx, e.edge.Input.ID)
+
+	if err != nil {
+		return err
+	}
+
+	return r.Run(ctx)
 }
 
 type Graph struct {
@@ -150,42 +177,23 @@ func (g *Graph) buildNode(ctx *Context, nodeId int) (Runner, error) {
 	// Register the execution outputs
 	for name, field := range p.outputs {
 		// Assert that the output field is not private, and is an Executor
-		if field.Type().Kind() != reflect.Func {
+		if field.Type().RType() != reflect2.RTypeOf(Execution{}) {
 			continue
 		}
 
-		e, ok := g.findOutputEdge(nodeId, name)
+		e, _ := g.findOutputEdge(nodeId, name)
 
-		next := Execution(func(ctx *Context) error {
-			// Snapshot the output field of the node to cache before we head to the next node
-			if _, ok := ctx.state[outputContextKey(nodeId)]; !ok {
-				ctx.state[outputContextKey(nodeId)] = p.output.Get(v)
-			}
-
-			// JIT the next node to be ran
-			r, err := g.buildNode(ctx, e.Input.ID)
-
-			if err != nil {
-				return err
-			}
-
-			return r.Run(ctx)
+		field.Set(p.output.Get(v), &Execution{
+			edge:   e,
+			output: v,
+			g:      g,
 		})
-
-		// If no edge was found, this execution flow will terminate the graph
-		if !ok {
-			next = func(ctx *Context) error {
-				return ErrGraphDone
-			}
-		}
-
-		field.Set(p.output.Get(v), &next)
 	}
 
 	// Populate all of the inputs
 	for name, field := range p.inputs {
 		// Assert the field is public and isn't an executor
-		if field.Type().Kind() == reflect.Func {
+		if field.Type().RType() == reflect2.RTypeOf(Execution{}) {
 			continue
 		}
 

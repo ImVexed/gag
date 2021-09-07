@@ -29,7 +29,7 @@ func (r *RNGEvent) Run(ctx *Context) error {
 
 	r.Output.RNG = rand.Intn(100)
 
-	return r.Output.Execution(ctx)
+	return r.Output.Execution.Next(ctx)
 }
 
 type Adder struct {
@@ -62,10 +62,10 @@ type Comparer struct {
 
 func (c *Comparer) Run(ctx *Context) error {
 	if c.Input.Number1 > c.Input.Number2 {
-		return c.Output.Greater(ctx)
+		return c.Output.Greater.Next(ctx)
 	}
 
-	return c.Output.Less(ctx)
+	return c.Output.Less.Next(ctx)
 }
 
 type Panicer struct {
@@ -78,17 +78,6 @@ type Panicer struct {
 
 func (p *Panicer) Run(ctx *Context) error {
 	panic("ahhh")
-}
-
-type Printer struct {
-	Input struct {
-		Value interface{}
-	}
-}
-
-func (p *Printer) Run(ctx *Context) error {
-	//fmt.Println(p.Input.Value)
-	return nil
 }
 
 func TestExample(t *testing.T) {
@@ -105,7 +94,7 @@ func TestExample(t *testing.T) {
 			{Output: Vertex{Raw: 2}, Input: Vertex{ID: 0, Field: "Number2"}},
 			{Output: Vertex{ID: 0, Field: "Sum"}, Input: Vertex{ID: 1, Field: "Number1"}},
 			{Output: Vertex{Raw: 4}, Input: Vertex{ID: 1, Field: "Number2"}},
-			{Output: Vertex{ID: 1, Field: "Greater"}, Input: Vertex{ID: 2}},
+			{Output: Vertex{ID: 1, Field: "Greater"}, Input: Vertex{ID: 2, Field: "Execution"}},
 		},
 	}
 
@@ -116,6 +105,37 @@ func TestExample(t *testing.T) {
 		t.Fail()
 	}
 
+}
+
+func BenchmarkExampleParallel(b *testing.B) {
+	Register(Adder{}, Comparer{}, Panicer{})
+
+	g := &Graph{
+		Nodes: []Node{
+			{Name: "Adder"},
+			{Name: "Comparer"},
+			{Name: "Panicer"},
+		},
+		Edges: []Edge{
+			{Output: Vertex{Raw: 1}, Input: Vertex{ID: 0, Field: "Number1"}},
+			{Output: Vertex{Raw: 2}, Input: Vertex{ID: 0, Field: "Number2"}},
+			{Output: Vertex{ID: 0, Field: "Sum"}, Input: Vertex{ID: 1, Field: "Number1"}},
+			{Output: Vertex{Raw: 4}, Input: Vertex{ID: 1, Field: "Number2"}},
+			{Output: Vertex{ID: 1, Field: "Greater"}, Input: Vertex{ID: 2, Field: "Execution"}},
+		},
+	}
+
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			if err := g.Run(1, nil); err != nil && !errors.Is(err, ErrGraphDone) {
+				fmt.Println(err)
+				b.Fail()
+			}
+		}
+	})
 }
 
 func BenchmarkExample(b *testing.B) {
@@ -132,12 +152,13 @@ func BenchmarkExample(b *testing.B) {
 			{Output: Vertex{Raw: 2}, Input: Vertex{ID: 0, Field: "Number2"}},
 			{Output: Vertex{ID: 0, Field: "Sum"}, Input: Vertex{ID: 1, Field: "Number1"}},
 			{Output: Vertex{Raw: 4}, Input: Vertex{ID: 1, Field: "Number2"}},
-			{Output: Vertex{ID: 1, Field: "Greater"}, Input: Vertex{ID: 2}},
+			{Output: Vertex{ID: 1, Field: "Greater"}, Input: Vertex{ID: 2, Field: "Execution"}},
 		},
 	}
 
 	b.ResetTimer()
 	b.ReportAllocs()
+
 	for i := 0; i < b.N; i++ {
 		if err := g.Run(1, nil); err != nil && !errors.Is(err, ErrGraphDone) {
 			fmt.Println(err)
