@@ -7,16 +7,15 @@ It intends to be a fast, highly parallel, DAG JIT, while still maintaining the b
 While the runtime is included in this library, a significantly more complex type system would need to be implemented ontop of GAG before it would likely be useful for any such similar use case.  
 
 ## Concepts
----
 Similar to traditional DAGs, there are 4 fundamental primatives in GAG:  
 
-- ### Graph
+- Graph
 	- A collection of Nodes & Edges
-- ### Vertex
+- Vertex
 	- A field on a node
-- ### Edge
+- Edge
 	- A connection between two vertex
-- ### Node
+- Node
 	- A unit of work with inputs and outputs, analagous to a function
 
 ### **Execution**
@@ -26,7 +25,6 @@ Unlike traditional Flow-Based Programming, GAG includes the concept of "executin
 GAG also caches the `Output` fields of any node that has already been run. In the future when the JIT is improved this may only conditionally occur when it is optimal.
 
 ## Examples
----
 A rather trival graph that simply adds 2 numbers together to compare the sum and panic depending on the result could be represented as such:
 
 ```go
