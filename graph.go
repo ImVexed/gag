@@ -3,7 +3,6 @@ package gag
 import (
 	"errors"
 	"strconv"
-	"sync"
 
 	"github.com/modern-go/reflect2"
 )
@@ -21,7 +20,6 @@ type Execution struct {
 var ErrGraphDone = errors.New("graph done")
 
 type nodeType struct {
-	pool    sync.Pool
 	t       reflect2.StructType
 	output  reflect2.StructField
 	input   reflect2.StructField
@@ -52,11 +50,6 @@ func Register(nodes ...interface{}) {
 		}
 
 		nodeTypes[t.Type1().Name()] = &nodeType{
-			sync.Pool{
-				New: func() interface{} {
-					return t.New()
-				},
-			},
 			t,
 			t.FieldByName("Output"),
 			t.FieldByName("Input"),
