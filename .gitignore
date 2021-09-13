@@ -1,0 +1,4 @@
+*.out
+./graph.png
+./graph.dot
+*.test
