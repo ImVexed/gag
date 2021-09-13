@@ -5065,11 +5065,7 @@ func BenchmarkBigExample(b *testing.B) {
 	b.ReportAllocs()
 
 	for i := 0; i < b.N; i++ {
-<<<<<<< HEAD
 		if err := g.Run(12, context.Background()); err != nil && !errors.Is(err, ErrGraphDone) {
-=======
-		if err := g.Run(12, nil); err != nil && !errors.Is(err, ErrGraphDone) {
->>>>>>> master
 			fmt.Println(err)
 			b.Fail()
 		}
