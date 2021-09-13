@@ -2,6 +2,7 @@ package gag
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -23,7 +24,7 @@ type RNGEvent struct {
 	}
 }
 
-func (r *RNGEvent) Run(ctx *Context) error {
+func (r *RNGEvent) Run(ctx context.Context) error {
 	// ctxSeed := ctx.State[rngContextSeedKey].(int64)
 	// rand.Seed(ctxSeed)
 
@@ -43,7 +44,7 @@ type Adder struct {
 	}
 }
 
-func (a *Adder) Run(ctx *Context) error {
+func (a *Adder) Run(ctx context.Context) error {
 	a.Output.Sum = a.Input.Number1 + a.Input.Number2
 	return nil
 }
@@ -61,7 +62,7 @@ type Comparer struct {
 	}
 }
 
-func (c *Comparer) Run(ctx *Context) error {
+func (c *Comparer) Run(ctx context.Context) error {
 	if c.Input.Number1 > c.Input.Number2 {
 		return c.Output.Greater.Next(ctx)
 	}
@@ -77,7 +78,7 @@ type Panicer struct {
 	Output struct{}
 }
 
-func (p *Panicer) Run(ctx *Context) error {
+func (p *Panicer) Run(ctx context.Context) error {
 	panic("ahhh")
 }
 
@@ -101,7 +102,7 @@ func TestExample(t *testing.T) {
 
 	drawGraph(g)
 
-	if err := g.Run(1, nil); err != nil && !errors.Is(err, ErrGraphDone) {
+	if err := g.Run(1, context.Background()); err != nil && !errors.Is(err, ErrGraphDone) {
 		fmt.Println(err)
 		t.Fail()
 	}
@@ -130,7 +131,7 @@ func BenchmarkExampleParallel(b *testing.B) {
 
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			if err := g.Run(1, nil); err != nil && !errors.Is(err, ErrGraphDone) {
+			if err := g.Run(1, context.Background()); err != nil && !errors.Is(err, ErrGraphDone) {
 				fmt.Println(err)
 				b.Fail()
 			}
@@ -160,7 +161,7 @@ func BenchmarkExample(b *testing.B) {
 	b.ReportAllocs()
 
 	for i := 0; i < b.N; i++ {
-		if err := g.Run(1, nil); err != nil && !errors.Is(err, ErrGraphDone) {
+		if err := g.Run(1, context.Background()); err != nil && !errors.Is(err, ErrGraphDone) {
 			fmt.Println(err)
 			b.Fail()
 		}
@@ -5064,7 +5065,11 @@ func BenchmarkBigExample(b *testing.B) {
 	b.ReportAllocs()
 
 	for i := 0; i < b.N; i++ {
+<<<<<<< HEAD
+		if err := g.Run(12, context.Background()); err != nil && !errors.Is(err, ErrGraphDone) {
+=======
 		if err := g.Run(12, nil); err != nil && !errors.Is(err, ErrGraphDone) {
+>>>>>>> master
 			fmt.Println(err)
 			b.Fail()
 		}
