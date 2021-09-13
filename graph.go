@@ -1,6 +1,7 @@
 package gag
 
 import (
+	"context"
 	"errors"
 	"strconv"
 
@@ -8,7 +9,7 @@ import (
 )
 
 type Runner interface {
-	Run(ctx *Context) error
+	Run(ctx context.Context) error
 }
 
 type Execution struct {
@@ -59,11 +60,12 @@ func Register(nodes ...interface{}) {
 	}
 }
 
-type Context struct {
-	state map[interface{}]interface{}
-}
+type nodeState map[interface{}]interface{}
+type nodeStateContextKey int
 
-func (e Execution) Next(ctx *Context) error {
+var nodeStateKey = nodeStateContextKey(0)
+
+func (e Execution) Next(ctx context.Context) error {
 	if e.edge.Input.Field == "" {
 		return ErrGraphDone
 	}
@@ -72,9 +74,11 @@ func (e Execution) Next(ctx *Context) error {
 
 	p := nodeTypes[n.Name]
 
+	state := ctx.Value(nodeStateKey).(nodeState)
+
 	// Snapshot the output field of the node to cache before we head to the next node
-	if _, ok := ctx.state[outputContextKey(e.edge.Output.ID)]; !ok {
-		ctx.state[outputContextKey(e.edge.Output.ID)] = p.output.Get(e.output)
+	if _, ok := state[outputContextKey(e.edge.Output.ID)]; !ok {
+		state[outputContextKey(e.edge.Output.ID)] = p.output.Get(e.output)
 	}
 
 	// JIT the next node to be ran
@@ -92,14 +96,8 @@ type Graph struct {
 	Edges []Edge
 }
 
-func (g *Graph) Run(nodeId int, state map[interface{}]interface{}) error {
-	ctx := &Context{
-		state: state,
-	}
-
-	if ctx.state == nil {
-		ctx.state = make(map[interface{}]interface{})
-	}
+func (g *Graph) Run(nodeId int, ctx context.Context) error {
+	ctx = context.WithValue(ctx, nodeStateKey, nodeState{})
 
 	r, err := g.buildNode(ctx, nodeId)
 
@@ -112,11 +110,13 @@ func (g *Graph) Run(nodeId int, state map[interface{}]interface{}) error {
 
 type outputContextKey int
 
-func (g *Graph) fetchNodeOutput(ctx *Context, nodeId int, field string) (interface{}, error) {
+func (g *Graph) fetchNodeOutput(ctx context.Context, nodeId int, field string) (interface{}, error) {
 	nt := nodeTypes[g.Nodes[nodeId].Name]
 
-	// // If the node has already been ran and it's output cached, use the cached value
-	if v, ok := ctx.state[outputContextKey(nodeId)]; ok {
+	state := ctx.Value(nodeStateKey).(nodeState)
+
+	// If the node has already been ran and it's output cached, use the cached value
+	if v, ok := state[outputContextKey(nodeId)]; ok {
 		return nt.outputs[field].Get(v), nil
 	}
 
@@ -133,7 +133,7 @@ func (g *Graph) fetchNodeOutput(ctx *Context, nodeId int, field string) (interfa
 
 	output := nt.output.Get(r)
 	// Cache the Output field
-	ctx.state[outputContextKey(nodeId)] = output
+	state[outputContextKey(nodeId)] = output
 
 	return nt.outputs[field].Get(output), nil
 }
@@ -158,7 +158,7 @@ func (g *Graph) findInputEdge(id int, field string) (Edge, bool) {
 	return Edge{}, false
 }
 
-func (g *Graph) buildNode(ctx *Context, nodeId int) (Runner, error) {
+func (g *Graph) buildNode(ctx context.Context, nodeId int) (Runner, error) {
 	if len(g.Nodes) < nodeId {
 		return nil, errors.New("out of bounds")
 	}
@@ -183,11 +183,10 @@ func (g *Graph) buildNode(ctx *Context, nodeId int) (Runner, error) {
 
 		e, _ := g.findOutputEdge(nodeId, name)
 
-		field.Set(p.output.Get(v), &Execution{
-			edge:   e,
-			output: v,
-			g:      g,
-		})
+		exe := field.Get(p.output.Get(v)).(*Execution)
+		exe.edge = e
+		exe.g = g
+		exe.output = v
 	}
 
 	// Populate all of the inputs

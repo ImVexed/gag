@@ -1,6 +1,6 @@
 # GAG - A Directed-Acyclic-Graph JIT in Go  
 
-GAG is a library I created while developing https://isobot.io to handle the core runtime necessary to execute blueprints.  
+GAG is a library I created while developing https://isobot.io to experiment with different ways of implementing the core runtime.  
 
 It intends to be a fast, highly parallel, DAG JIT, while still maintaining the balance between performance and usability.  
 
@@ -29,19 +29,19 @@ A rather trival graph that simply adds 2 numbers together to compare the sum and
 
 ```go
 &Graph{
-		Nodes: []Node{
-			{Name: "Adder"},
-			{Name: "Comparer"},
-			{Name: "Panicer"},
-		},
-		Edges: []Edge{
-			{Output: Vertex{Raw: 1}, Input: Vertex{ID: 0, Field: "Number1"}},
-			{Output: Vertex{Raw: 2}, Input: Vertex{ID: 0, Field: "Number2"}},
-			{Output: Vertex{ID: 0, Field: "Sum"}, Input: Vertex{ID: 1, Field: "Number1"}},
-			{Output: Vertex{Raw: 4}, Input: Vertex{ID: 1, Field: "Number2"}},
-			{Output: Vertex{ID: 1, Field: "Greater"}, Input: Vertex{ID: 2}},
-		},
-	}
+	Nodes: []Node{
+		{Name: "Adder"},
+		{Name: "Comparer"},
+		{Name: "Panicer"},
+	},
+	Edges: []Edge{
+		{Output: Vertex{Raw: 1}, Input: Vertex{ID: 0, Field: "Number1"}},
+		{Output: Vertex{Raw: 2}, Input: Vertex{ID: 0, Field: "Number2"}},
+		{Output: Vertex{ID: 0, Field: "Sum"}, Input: Vertex{ID: 1, Field: "Number1"}},
+		{Output: Vertex{Raw: 4}, Input: Vertex{ID: 1, Field: "Number2"}},
+		{Output: Vertex{ID: 1, Field: "Greater"}, Input: Vertex{ID: 2}},
+	},
+}
 ```
 
 Where the implementation of the `Adder` and `Comparer` nodes look like:
