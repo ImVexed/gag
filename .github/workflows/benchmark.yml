@@ -13,7 +13,9 @@ jobs:
       - uses: actions/setup-go@v1
       # Run benchmark with `go test -bench` and stores the output to a file
       - name: Run benchmark
-        run: |
+        with:
+          go-version: '1.17.1'
+      - run: |
           go mod download
           go test -bench=. | tee output.txt
       # Download previous benchmark result from cache (if exists)
