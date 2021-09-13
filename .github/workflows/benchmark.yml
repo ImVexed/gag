@@ -41,7 +41,7 @@ jobs:
           external-data-json-path: ./cache/benchmark-data.json
           fail-on-alert: true
           # GitHub API token to make a commit comment
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GHP_SECRET }}
           # Enable alert commit comment
           comment-on-alert: true
           # Mention @rhysd in the commit comment
