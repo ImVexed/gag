@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1635711654524,
+  "lastUpdate": 1635712167344,
   "repoUrl": "https://github.com/ImVexed/gag",
   "entries": {
     "Benchmark": [
@@ -252,6 +252,48 @@ window.BENCHMARK_DATA = {
             "value": 24030414,
             "unit": "ns/op\t  247621 B/op\t    2899 allocs/op",
             "extra": "45 times\n2 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "v@nul.lu",
+            "name": "V-X",
+            "username": "ImVexed"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "268541bc4b6595f88a2654cf00bcef306981024e",
+          "message": "Testing (#6)\n\n* test structure",
+          "timestamp": "2021-10-31T13:28:08-07:00",
+          "tree_id": "1f4b25623729c6439a6d3a2e6d9fef9c603ab3f6",
+          "url": "https://github.com/ImVexed/gag/commit/268541bc4b6595f88a2654cf00bcef306981024e"
+        },
+        "date": 1635712166896,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkExampleParallel",
+            "value": 1294,
+            "unit": "ns/op\t     776 B/op\t       5 allocs/op",
+            "extra": "879256 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkExample",
+            "value": 2290,
+            "unit": "ns/op\t     760 B/op\t       5 allocs/op",
+            "extra": "564685 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkBigExample",
+            "value": 23916669,
+            "unit": "ns/op\t  247516 B/op\t    2899 allocs/op",
+            "extra": "49 times\n2 procs"
           }
         ]
       }
