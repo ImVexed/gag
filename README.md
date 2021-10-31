@@ -93,8 +93,6 @@ Or in isobot.io:
 # TODO
 - Allow tainting specific outputs to invalidate downstream caches
 - Additional node lifecycle methods
-- Further performance improvements
-- Build out a more real-world benchmarking test suite
 
 # WARNINGS
 There is lots of unsafe non-standard reflection going on in this project. It is not nearly tested enough to be used in production, and there are likely many dragons hiding in the code itself.

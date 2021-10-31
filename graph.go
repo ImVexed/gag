@@ -12,6 +12,21 @@ type Runner interface {
 	Run(ctx context.Context) error
 }
 
+type Node struct {
+	Name  string
+	State interface{}
+}
+
+type Vertex struct {
+	ID    int
+	Field string
+	Raw   interface{}
+}
+
+type Edge struct {
+	Output, Input Vertex
+}
+
 type Execution struct {
 	output interface{}
 	edge   Edge
@@ -228,19 +243,4 @@ func (g *Graph) buildNode(ctx context.Context, nodeId int) (Runner, error) {
 	}
 
 	return v.(Runner), nil
-}
-
-type Node struct {
-	Name  string
-	State interface{}
-}
-
-type Vertex struct {
-	ID    int
-	Field string
-	Raw   interface{}
-}
-
-type Edge struct {
-	Output, Input Vertex
 }
