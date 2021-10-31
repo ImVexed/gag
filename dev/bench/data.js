@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1635711264411,
+  "lastUpdate": 1635711654524,
   "repoUrl": "https://github.com/ImVexed/gag",
   "entries": {
     "Benchmark": [
@@ -210,6 +210,48 @@ window.BENCHMARK_DATA = {
             "value": 24358145,
             "unit": "ns/op\t  247396 B/op\t    2898 allocs/op",
             "extra": "48 times\n2 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "v@nul.lu",
+            "name": "V-X",
+            "username": "ImVexed"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "08f30ab4b46a83806ad8aa8c03116e605b48f301",
+          "message": "Go117 (#5)\n\n* update to go 1.17, migrate go mod",
+          "timestamp": "2021-10-31T13:19:37-07:00",
+          "tree_id": "8a5c99c4198a0ecec9d9ca215486dad05c5ea233",
+          "url": "https://github.com/ImVexed/gag/commit/08f30ab4b46a83806ad8aa8c03116e605b48f301"
+        },
+        "date": 1635711653712,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkExampleParallel",
+            "value": 1390,
+            "unit": "ns/op\t     777 B/op\t       5 allocs/op",
+            "extra": "730934 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkExample",
+            "value": 2344,
+            "unit": "ns/op\t     760 B/op\t       5 allocs/op",
+            "extra": "558546 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkBigExample",
+            "value": 24030414,
+            "unit": "ns/op\t  247621 B/op\t    2899 allocs/op",
+            "extra": "45 times\n2 procs"
           }
         ]
       }
