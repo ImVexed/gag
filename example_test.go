@@ -27,8 +27,8 @@ type RNGEvent struct {
 }
 
 func (r *RNGEvent) Run(ctx context.Context) error {
-	// ctxSeed := ctx.State[rngContextSeedKey].(int64)
-	// rand.Seed(ctxSeed)
+	ctxSeed := ctx.Value(rngContextSeedKey).(int64)
+	rand.Seed(ctxSeed)
 
 	r.Output.RNG = rand.Intn(100)
 
@@ -104,7 +104,9 @@ func TestExample(t *testing.T) {
 
 	drawGraph(g)
 
-	if err := g.Run(1, context.Background()); err != nil && !errors.Is(err, ErrGraphDone) {
+	ctx := context.WithValue(context.Background(), rngContextSeedKey, 12345)
+
+	if err := g.Run(1, ctx); err != nil && !errors.Is(err, ErrGraphDone) {
 		fmt.Println(err)
 		t.Fail()
 	}
