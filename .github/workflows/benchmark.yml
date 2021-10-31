@@ -32,21 +32,20 @@ jobs:
           tool: 'go'
           # Where the output from the benchmark tool is stored
           output-file-path: output.txt
-          # Where the previous data file is stored
-          external-data-json-path: ./cache/benchmark-data.json
           # Workflow will fail when an alert happens
           fail-on-alert: true
-      # Upload the updated cache file for the next job by actions/cache
-      - name: Store benchmark result
-        uses: rhysd/github-action-benchmark@v1
-        with:
-          tool: 'go'
-          output-file-path: output.txt
-          external-data-json-path: ./cache/benchmark-data.json
-          fail-on-alert: true
-          # GitHub API token to make a commit comment
           github-token: ${{ secrets.GHP_SECRET }}
-          # Enable alert commit comment
-          comment-on-alert: true
-          # Mention @rhysd in the commit comment
+          # Push and deploy GitHub pages branch automatically
+          auto-push: true
           alert-comment-cc-users: '@ImVexed'
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
+          version: latest
+          args: -E cyclop -E gosec
