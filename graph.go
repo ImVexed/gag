@@ -12,19 +12,24 @@ type Runner interface {
 	Run(ctx context.Context) error
 }
 
+type Graph struct {
+	Nodes []Node
+	Edges []Edge
+}
+
 type Node struct {
 	Name  string
 	State interface{}
+}
+
+type Edge struct {
+	Output, Input Vertex
 }
 
 type Vertex struct {
 	ID    int
 	Field string
 	Raw   interface{}
-}
-
-type Edge struct {
-	Output, Input Vertex
 }
 
 type Execution struct {
@@ -104,11 +109,6 @@ func (e Execution) Next(ctx context.Context) error {
 	}
 
 	return r.Run(ctx)
-}
-
-type Graph struct {
-	Nodes []Node
-	Edges []Edge
 }
 
 func (g *Graph) Run(nodeId int, ctx context.Context) error {
